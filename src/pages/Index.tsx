@@ -279,21 +279,25 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
       <div className="container max-w-lg mx-auto">
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-xl">
+                🐹
+              </div>
+              <div>
+                <p className="text-sm font-semibold">Hamster Kombat</p>
+                <p className="text-xs text-muted-foreground">CEO (lvl {level})</p>
+              </div>
+            </div>
+            <Button variant="ghost" size="sm" className="gap-2">
+              <Icon name="Settings" size={18} />
+            </Button>
+          </div>
+        </div>
+
         {activeTab === 'exchange' && (
           <div className="px-4 py-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-xl">
-                  🐹
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">CEO (lvl {level})</p>
-                </div>
-              </div>
-              <Button variant="ghost" size="sm" className="gap-2">
-                <Icon name="Settings" size={18} />
-              </Button>
-            </div>
 
             <div className="text-center space-y-2">
               <div className="flex items-center justify-center gap-2">
