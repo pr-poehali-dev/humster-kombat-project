@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Load player progress",
+      "method": "GET",
+      "path": "/?player_id=test_player_123",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "data": {}
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

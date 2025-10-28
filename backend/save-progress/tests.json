@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "Save player progress",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "player_id": "test_player_123",
+        "coins": 5000,
+        "energy": 800,
+        "max_energy": 1000,
+        "profit_per_hour": 500,
+        "level": 2,
+        "tap_power": 1,
+        "upgrades": [],
+        "tasks": []
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

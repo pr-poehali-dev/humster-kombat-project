@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -21,7 +21,19 @@ interface Upgrade {
   category: string;
 }
 
+const SAVE_URL = 'https://functions.poehali.dev/5d436866-eba4-4739-ac24-24eb94289ae5';
+const LOAD_URL = 'https://functions.poehali.dev/1a8d7f0c-f42c-453d-9a1c-b20d078cbd1d';
+
 export default function Index() {
+  const [playerId] = useState(() => {
+    let id = localStorage.getItem('player_id');
+    if (!id) {
+      id = 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('player_id', id);
+    }
+    return id;
+  });
+  
   const [coins, setCoins] = useState(0);
   const [energy, setEnergy] = useState(1000);
   const [maxEnergy, setMaxEnergy] = useState(1000);
@@ -30,6 +42,64 @@ export default function Index() {
   const [particles, setParticles] = useState<CoinParticle[]>([]);
   const [tapPower, setTapPower] = useState(1);
   const [activeTab, setActiveTab] = useState('exchange');
+  const [upgrades, setUpgrades] = useState<Upgrade[]>([
+    { id: 1, name: 'Markets', icon: '📊', cost: 1000, level: 0, profit: 126, description: 'Trade on crypto markets', category: 'PR&Team' },
+    { id: 2, name: 'CEO', icon: '👔', cost: 2000, level: 0, profit: 250, description: 'Hire a professional CEO', category: 'PR&Team' },
+    { id: 3, name: 'Support team', icon: '🎧', cost: 1500, level: 0, profit: 180, description: 'Build customer support', category: 'PR&Team' },
+    { id: 4, name: 'Bitcoin', icon: '₿', cost: 5000, level: 0, profit: 500, description: 'Invest in Bitcoin', category: 'Markets' },
+    { id: 5, name: 'Ethereum', icon: '◈', cost: 4000, level: 0, profit: 400, description: 'Invest in Ethereum', category: 'Markets' },
+    { id: 6, name: 'Hamster YouTube', icon: '📺', cost: 3000, level: 0, profit: 300, description: 'Start YouTube channel', category: 'PR&Team' },
+  ]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const saveProgress = useCallback(async () => {
+    try {
+      await fetch(SAVE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          player_id: playerId,
+          coins,
+          energy,
+          max_energy: maxEnergy,
+          profit_per_hour: profitPerHour,
+          level,
+          tap_power: tapPower,
+          upgrades,
+          tasks: []
+        })
+      });
+    } catch (error) {
+      console.error('Failed to save progress:', error);
+    }
+  }, [playerId, coins, energy, maxEnergy, profitPerHour, level, tapPower, upgrades]);
+
+  useEffect(() => {
+    const loadProgress = async () => {
+      try {
+        const response = await fetch(`${LOAD_URL}?player_id=${playerId}`);
+        const result = await response.json();
+        
+        if (result.found && result.data) {
+          setCoins(result.data.coins);
+          setEnergy(result.data.energy);
+          setMaxEnergy(result.data.max_energy);
+          setProfitPerHour(result.data.profit_per_hour);
+          setLevel(result.data.level);
+          setTapPower(result.data.tap_power);
+          if (result.data.upgrades && result.data.upgrades.length > 0) {
+            setUpgrades(result.data.upgrades);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load progress:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadProgress();
+  }, [playerId]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -37,6 +107,15 @@ export default function Index() {
     }, 100);
     return () => clearInterval(interval);
   }, [maxEnergy]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      const saveInterval = setInterval(() => {
+        saveProgress();
+      }, 5000);
+      return () => clearInterval(saveInterval);
+    }
+  }, [isLoading, saveProgress]);
 
   const handleTap = (e: React.MouseEvent<HTMLDivElement>) => {
     if (energy >= tapPower) {
@@ -61,14 +140,7 @@ export default function Index() {
     }
   };
 
-  const upgrades: Upgrade[] = [
-    { id: 1, name: 'Markets', icon: '📊', cost: 1000, level: 0, profit: 126, description: 'Trade on crypto markets', category: 'PR&Team' },
-    { id: 2, name: 'CEO', icon: '👔', cost: 2000, level: 0, profit: 250, description: 'Hire a professional CEO', category: 'PR&Team' },
-    { id: 3, name: 'Support team', icon: '🎧', cost: 1500, level: 0, profit: 180, description: 'Build customer support', category: 'PR&Team' },
-    { id: 4, name: 'Bitcoin', icon: '₿', cost: 5000, level: 0, profit: 500, description: 'Invest in Bitcoin', category: 'Markets' },
-    { id: 5, name: 'Ethereum', icon: '◈', cost: 4000, level: 0, profit: 400, description: 'Invest in Ethereum', category: 'Markets' },
-    { id: 6, name: 'Hamster YouTube', icon: '📺', cost: 3000, level: 0, profit: 300, description: 'Start YouTube channel', category: 'PR&Team' },
-  ];
+
 
   const dailyTasks = [
     { id: 1, title: 'Daily reward', reward: 5000, icon: '🎁', completed: false },
@@ -82,13 +154,32 @@ export default function Index() {
     { id: 3, title: 'Invite 3 friends', reward: 25000, icon: '👥', completed: false },
   ];
 
-  const handleUpgrade = (upgrade: Upgrade) => {
-    if (coins >= upgrade.cost) {
-      setCoins(prev => prev - upgrade.cost);
-      setProfitPerHour(prev => prev + upgrade.profit);
-      upgrades.find(u => u.id === upgrade.id)!.level += 1;
-    }
+  const handleUpgrade = (upgradeId: number) => {
+    const upgrade = upgrades.find(u => u.id === upgradeId);
+    if (!upgrade || coins < upgrade.cost) return;
+    
+    setCoins(prev => prev - upgrade.cost);
+    setProfitPerHour(prev => prev + upgrade.profit);
+    setUpgrades(prev => prev.map(u => 
+      u.id === upgradeId 
+        ? { ...u, level: u.level + 1, cost: Math.floor(u.cost * 1.5) }
+        : u
+    ));
+    saveProgress();
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mx-auto flex items-center justify-center text-5xl animate-pulse">
+            🐹
+          </div>
+          <p className="text-lg text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
@@ -187,7 +278,7 @@ export default function Index() {
               {upgrades.map((upgrade) => (
                 <Card key={upgrade.id} className="bg-card border-border p-3 hover:bg-card/80 transition-colors">
                   <button
-                    onClick={() => handleUpgrade(upgrade)}
+                    onClick={() => handleUpgrade(upgrade.id)}
                     className="w-full text-left"
                     disabled={coins < upgrade.cost}
                   >
