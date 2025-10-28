@@ -43,6 +43,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     tap_power = body_data.get('tap_power', 1)
     upgrades = json.dumps(body_data.get('upgrades', []))
     tasks = json.dumps(body_data.get('tasks', []))
+    completed_tasks = json.dumps(body_data.get('completed_tasks', []))
     
     if not player_id:
         return {
@@ -61,8 +62,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     cur.execute("""
         INSERT INTO t_p28942620_humster_kombat_proje.player_progress 
-        (player_id, coins, energy, max_energy, profit_per_hour, level, tap_power, upgrades, tasks, updated_at)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s::jsonb, CURRENT_TIMESTAMP)
+        (player_id, coins, energy, max_energy, profit_per_hour, level, tap_power, upgrades, tasks, completed_tasks, updated_at)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s::jsonb, %s::jsonb, CURRENT_TIMESTAMP)
         ON CONFLICT (player_id) 
         DO UPDATE SET 
             coins = EXCLUDED.coins,
@@ -73,8 +74,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             tap_power = EXCLUDED.tap_power,
             upgrades = EXCLUDED.upgrades,
             tasks = EXCLUDED.tasks,
+            completed_tasks = EXCLUDED.completed_tasks,
             updated_at = CURRENT_TIMESTAMP
-    """, (player_id, coins, energy, max_energy, profit_per_hour, level, tap_power, upgrades, tasks))
+    """, (player_id, coins, energy, max_energy, profit_per_hour, level, tap_power, upgrades, tasks, completed_tasks))
     
     conn.commit()
     cur.close()

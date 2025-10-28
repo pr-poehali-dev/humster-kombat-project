@@ -1,0 +1,17 @@
+{
+  "tests": [
+    {
+      "name": "Claim daily reward",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "player_id": "test_player_daily"
+      },
+      "expectedStatus": 404,
+      "expectedBody": {
+        "error": "Player not found"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

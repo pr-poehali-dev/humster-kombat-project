@@ -52,7 +52,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     cur = conn.cursor()
     
     cur.execute("""
-        SELECT coins, energy, max_energy, profit_per_hour, level, tap_power, upgrades, tasks
+        SELECT coins, energy, max_energy, profit_per_hour, level, tap_power, upgrades, tasks, 
+               last_daily_reward, daily_streak, completed_tasks
         FROM t_p28942620_humster_kombat_proje.player_progress
         WHERE player_id = %s
     """, (player_id,))
@@ -79,7 +80,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'level': 1,
                     'tap_power': 1,
                     'upgrades': [],
-                    'tasks': []
+                    'tasks': [],
+                    'last_daily_reward': None,
+                    'daily_streak': 0,
+                    'completed_tasks': []
                 }
             })
         }
@@ -101,7 +105,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'level': row[4],
                 'tap_power': row[5],
                 'upgrades': row[6],
-                'tasks': row[7]
+                'tasks': row[7],
+                'last_daily_reward': row[8].isoformat() if row[8] else None,
+                'daily_streak': row[9],
+                'completed_tasks': row[10]
             }
         })
     }
