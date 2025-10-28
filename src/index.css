@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Rubik:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,44 +6,44 @@
 
 @layer base {
   :root {
-    --background: 220 26% 14%;
+    --background: 219 29% 8%;
     --foreground: 0 0% 100%;
 
-    --card: 224 30% 18%;
+    --card: 218 23% 12%;
     --card-foreground: 0 0% 100%;
 
-    --popover: 224 30% 18%;
+    --popover: 218 23% 12%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 262 83% 58%;
+    --primary: 38 92% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 17 88% 55%;
+    --secondary: 220 17% 17%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 224 20% 25%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 220 17% 17%;
+    --muted-foreground: 0 0% 60%;
 
-    --accent: 326 78% 60%;
+    --accent: 38 92% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 224 20% 25%;
-    --input: 224 20% 25%;
-    --ring: 262 83% 58%;
+    --border: 220 17% 17%;
+    --input: 220 17% 17%;
+    --ring: 38 92% 50%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 220 26% 14%;
+    --sidebar-background: 219 29% 8%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 262 83% 58%;
+    --sidebar-primary: 38 92% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 224 30% 18%;
+    --sidebar-accent: 218 23% 12%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 224 20% 25%;
-    --sidebar-ring: 262 83% 58%;
+    --sidebar-border: 220 17% 17%;
+    --sidebar-ring: 38 92% 50%;
   }
 }
 
@@ -54,7 +54,12 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: "Rubik", sans-serif;
+    font-family:
+      "Inter",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      sans-serif;
   }
 
   h1,
@@ -63,7 +68,7 @@
   h4,
   h5,
   h6 {
-    font-family: "Montserrat", sans-serif;
+    font-family: "Inter", sans-serif;
   }
 }
 
